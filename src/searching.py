@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from database import knowledge_base
-
+from pathlib import Path
+import json
 
 def fuzzy_search(query: str, base: dict[str, list[str]] | None = None) -> list[str]:
     """Return knowledge topics whose names contain *query* (case-insensitive)."""
-    if base is None:
+    if not base:
         base = knowledge_base
+    else:
+        base = json.loads(Path(base).read_text(encoding='utf-8'))
     query_lower = query.lower()
     return [name for name in base if query_lower in name.lower()]
 
@@ -23,9 +26,10 @@ def prerequisite_chain(
     Depth 1 = direct prerequisites, depth 2 = prerequisites of those, etc.
     Handles cycles and missing entries gracefully.
     """
-    if base is None:
+    if not base:
         base = knowledge_base
-
+    else:
+        base = json.loads(Path(base).read_text(encoding='utf-8'))
     results: list[tuple[int, str]] = []
     visited: set[str] = set()
 

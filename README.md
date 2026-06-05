@@ -1,71 +1,25 @@
-# Mentor - your personal NorthStar
-Builded by using Flet
-## Features
-Visualize prerequist-map/roadmap/path by using ProjectGraph (lirentech)
-## Run the app
-
-### uv
-
-Run as a desktop app:
-
-```bash
-uv run flet run
-```
-
-Run as a web app:
-
-```bash
-uv run flet run --web
-```
-
-For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/).
-
-## Build the app
-
-### Android
-
-```bash
-flet build apk -v
-```
-
-For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
-
-### iOS
-
-```bash
-flet build ipa -v
-```
-
-For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
-
-### macOS
-
-```bash
-flet build macos -v
-```
-
-For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
-
-### Linux
-
-```bash
-flet build linux -v
-```
-
-For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
-
-### Windows
-
-```bash
-flet build windows -v
-```
-
-For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).
-
-### Web
-
-```bash
-flet build web -v
-```
-
-For more details on building Web app, refer to the [Web Packaging Guide](https://flet.dev/docs/publish/web/).
+# where Mentor comes from 
+It's long been steep and overwhelming for self-learning, as either nobody guides us nor watches us or too many tips flooding in the Internet that we become hesitated to choose and carry out plans. 
+Thus, Mentor is created to offer self-learners as well as all other learners a personal mentor, who structures information to present you with an explicit intuitive map that serves as a manual to reach your goals. 
+# what Mentor will do
+Currently it only show prerequistes based on user query.
+In the future, we wish integrating digital-human (live2D) into Mentor 
+# what problems we meet and our solutions 
+Q: how to display knowledge relationship 
+A: applying graph theory, using nodes to represent knowledges and edges to show relationship 
+Q: how to store relationship/notes pairs
+A: currently using simple key-value dictionary 
+# how Mentor work 
+1. get query from user
+2. search in database to match query
+3. put results in the user-defined form (project-graph compatible markdown)
+# project log
+- [x] build MVP ( minimum viable product ): a flet app that has basic functions :: frontend contributed by tuhangming and searching module by chenyanxuan
+-  better searching algorithm 
+	- [ ] binary matching
+- AI harness 
+	- [ ] able to use llm api, get llm outputs
+- Diverse data form
+	- [ ] Mermaid
+- Use-defined database
+    - [x] JSON form

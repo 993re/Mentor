@@ -2,20 +2,29 @@
 
 import flet as ft
 
-import database
+
 import exporting
 import searching
 
 
 @ft.control
 class Mentor(ft.Container):
-    """Main widget: search bar + prerequisite tree display."""
-
     bgcolor: str = "#F2DEA4"
     width: int = 600
     padding: int = 20
 
     def init(self):
+        self.databasepath = None
+        self.database_field = ft.TextField(
+            label="Choose one database",
+            hint_text="The address of your database. Left Blank will use intrinsic database. " \
+            "Please press Enter after you type in the path",
+            bgcolor="#A3B1F2",
+            expand=True,
+            autofocus=True,
+            on_submit=self._choose_database,
+        )
+
         self.search_field = ft.TextField(
             label="Your Goal",
             hint_text="What you want to learn",
@@ -29,6 +38,7 @@ class Mentor(ft.Container):
             tooltip="Search prerequisites",
             on_click=self._on_search,
         )
+
         self.export_mode = "None"
         self.exportAddress_field = ft.TextField(
             hint_text="path/to/output.md",
@@ -44,10 +54,12 @@ class Mentor(ft.Container):
             on_select=self.changeExportMode,
         )
 
+     
         self.result_list = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
 
         self.content = ft.Column(
             controls=[
+                ft.Row([self.database_field]),
                 ft.Row([self.search_field, self.search_btn]),
                 ft.Row([self.setExportMode_btn, self.exportAddress_field]),
                 ft.Divider(),
@@ -68,12 +80,12 @@ class Mentor(ft.Container):
             self.update()
             return
 
-        matches = searching.fuzzy_search(query, database.knowledge_base)
+        matches = searching.fuzzy_search(query, self.databasepath)
 
         if not matches:
             self.result_list.controls.append(
                 ft.Text(
-                    f'No match for "{query}". Try another keyword.',
+                    f'No match for "{query}". Try another keyword or database.',
                     color="#CC4444",
                 ),
             )
@@ -89,7 +101,7 @@ class Mentor(ft.Container):
 
             chain = searching.prerequisite_chain(
                 topic,
-                base=database.knowledge_base,
+                base=self.databasepath,
                 max_depth=3,
             )
             chains_db[topic] = chain
@@ -135,6 +147,9 @@ class Mentor(ft.Container):
                         ),
                     )
                     self.update()
+
+    def _choose_database(self, e) -> None:
+        self.databasepath = self.database_field.value.strip()
 
     def changeExportMode(self, e) -> None:
         self.export_mode = self.setExportMode_btn.value
