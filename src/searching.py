@@ -6,30 +6,40 @@ from database import knowledge_base
 from pathlib import Path
 import json
 
-def fuzzy_search(query: str, base: dict[str, list[str]] | None = None) -> list[str]:
+
+def _load_base(base: str | None) -> dict[str, list[str]]:
+    if base is None:
+        return knowledge_base
+    return json.loads(Path(base).read_text(encoding='utf-8'))
+
+
+def fuzzy_search(query: str, base: str | None = None) -> list[str]:
     """Return knowledge topics whose names contain *query* (case-insensitive)."""
-    if not base:
-        base = knowledge_base
-    else:
-        base = json.loads(Path(base).read_text(encoding='utf-8'))
+    loaded = _load_base(base)
     query_lower = query.lower()
-    return [name for name in base if query_lower in name.lower()]
+    return [name for name in loaded if query_lower in name.lower()]
+
+
+def depth0(
+    topic: str,
+    base: str | None = None,
+) -> list[str]:
+    """Return immediate prerequisites of *topic* (depth 0 neighbours)."""
+    loaded = _load_base(base)
+    return list(loaded.get(topic, []))
 
 
 def prerequisite_chain(
     knowledge: str,
-    base: dict[str, list[str]] | None = None,
+    base: str | None = None,
     max_depth: int = 3,
 ) -> list[tuple[int, str]]:
     """Return a flat list of *(depth, topic)* for the prerequisite tree.
 
-    Depth 1 = direct prerequisites, depth 2 = prerequisites of those, etc.
+    Depth 1 = depth0 prerequisites, depth 2 = prerequisites of those, etc.
     Handles cycles and missing entries gracefully.
+    Composes *depth0* internally for neighbour lookup.
     """
-    if not base:
-        base = knowledge_base
-    else:
-        base = json.loads(Path(base).read_text(encoding='utf-8'))
     results: list[tuple[int, str]] = []
     visited: set[str] = set()
 
@@ -37,7 +47,7 @@ def prerequisite_chain(
         if depth > max_depth or name in visited:
             return
         visited.add(name)
-        for prerequisite in base.get(name, []):
+        for prerequisite in depth0(name, base):
             results.append((depth, prerequisite))
             _dfs(prerequisite, depth + 1)
 

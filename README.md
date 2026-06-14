@@ -13,13 +13,18 @@ A: currently using simple key-value dictionary
 1. get query from user
 2. search in database to match query
 3. put results in the user-defined form (project-graph compatible markdown)
-# project log
+# project log and plan
 - [x] build MVP ( minimum viable product ): a flet app that has basic functions :: frontend contributed by tuhangming and searching module by chenyanxuan
--  better searching algorithm 
-	- [ ] binary matching
+- User-defined searching algorithm 
+	- [ ] Vespa search engine
 - AI harness 
 	- [ ] able to use llm api, get llm outputs
-- Diverse data form
+	- [ ] mcp-server
+	- [ ] cli
+- Diverse output form
 	- [ ] Mermaid
-- Use-defined database
-    - [x] JSON form
+- Multiple database form
+    - [x] JSON
+- Data structure
+	- [ ] Weights of prerequisites
+	- [ ] Distinguish between goals and methods

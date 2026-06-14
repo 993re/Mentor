@@ -1,20 +1,12 @@
-"""Knowledge base mapping topic names to their prerequisite knowledge."""
+"""Testing database"""
 
-from __future__ import annotations
+from __future__ import annotations #be able to annote data type, easier to check bugs
 
 knowledge_base: dict[str, list[str]] = {
-    "Python编程": ["计算机基础", "英语基础"],
-    "机器学习": ["Python编程", "线性代数", "概率论"],
-    "深度学习": ["机器学习", "微积分", "Python编程"],
-    "Java开发": ["计算机基础", "面向对象思想"],
-    "数据结构": ["Python编程/Java开发", "离散数学"],
-    "算法": ["数据结构", "数学逻辑"],
-    "MySQL数据库": ["计算机基础", "SQL语法"],
-    "网络原理": ["计算机基础"],
-    "线性代数": ["高中数学"],
-    "微积分": ["高中数学"],
-    "概率论": ["高中数学"],
-    "离散数学": ["高中数学"],
+    "Python": [],
+    "Machine Learning": ["Python", "线性代数", "概率论"],
+    "深度学习": ["Machine Learning", "微积分", "Python"],
+    "MySQL数据库": ["SQL语法"],
 }
 
 __all__ = ["knowledge_base"]
