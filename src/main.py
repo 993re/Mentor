@@ -15,6 +15,8 @@ class Mentor(ft.Container):
 
     def init(self):
         self.databasepath = None
+        self.engine_mode = "dict"
+
         self.database_field = ft.TextField(
             label="Choose one database",
             hint_text="The address of your database. Left Blank will use intrinsic database. " \
@@ -23,6 +25,17 @@ class Mentor(ft.Container):
             expand=True,
             autofocus=True,
             on_submit=self._choose_database,
+        )
+
+        self.engine_selector = ft.Dropdown(
+            value="dict",
+            options=[
+                ft.dropdown.Option("dict", "Dict (substring)"),
+                ft.dropdown.Option("vespa", "Vespa (BM25)"),
+            ],
+            on_select=self._on_engine_change,
+            tooltip="Search engine backend",
+            expand=True,
         )
 
         self.search_field = ft.TextField(
@@ -60,6 +73,7 @@ class Mentor(ft.Container):
         self.content = ft.Column(
             controls=[
                 ft.Row([self.database_field]),
+                ft.Row([self.engine_selector]),
                 ft.Row([self.search_field, self.search_btn]),
                 ft.Row([self.setExportMode_btn, self.exportAddress_field]),
                 ft.Divider(),
@@ -80,7 +94,7 @@ class Mentor(ft.Container):
             self.update()
             return
 
-        matches = searching.fuzzy_search(query, self.databasepath)
+        matches = searching.search(query, base=self.databasepath, engine=self.engine_mode)
 
         if not matches:
             self.result_list.controls.append(
@@ -153,6 +167,9 @@ class Mentor(ft.Container):
 
     def changeExportMode(self, e) -> None:
         self.export_mode = self.setExportMode_btn.value
+
+    def _on_engine_change(self, e) -> None:
+        self.engine_mode = self.engine_selector.value
 
 
 def main(page: ft.Page):

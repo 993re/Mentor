@@ -9,7 +9,8 @@ authors = [
     { name = "deepseek-v4-pro" },
 ]
 dependencies = [
-    "flet>=0.85.1"
+    "flet>=0.85.1",
+    "pyvespa>=1.0.0",
 ]
     
 [dependency-groups]
