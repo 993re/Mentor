@@ -2,7 +2,6 @@
 
 import flet as ft
 
-
 import exporting
 import searching
 
@@ -16,6 +15,7 @@ class Mentor(ft.Container):
     def init(self):
         self.databasepath = None
         self.engine_mode = "dict"
+        self.appenddepth = 3
 
         self.database_field = ft.TextField(
             label="Choose one database",
@@ -36,6 +36,15 @@ class Mentor(ft.Container):
             on_select=self._on_engine_change,
             tooltip="Search engine backend",
             expand=True,
+        )
+
+        self.depth_field = ft.TextField(
+            label="set prerequisites depth",
+            hint_text="set the depth, e.g., enter '2' will later search out direct prerequisites and their direct prerequisites",
+            bgcolor="#A3B1F2",
+            expand=True,
+            autofocus=True,
+            on_submit=self._set_depth,
         )
 
         self.search_field = ft.TextField(
@@ -74,7 +83,7 @@ class Mentor(ft.Container):
             controls=[
                 ft.Row([self.database_field]),
                 ft.Row([self.engine_selector]),
-                ft.Row([self.search_field, self.search_btn]),
+                ft.Row([self.search_field, self.search_btn, self.depth_field]),
                 ft.Row([self.setExportMode_btn, self.exportAddress_field]),
                 ft.Divider(),
                 self.result_list,
@@ -108,17 +117,17 @@ class Mentor(ft.Container):
 
         chains_db: dict[str, list[tuple[int, str]]] = {}
 
-        for topic in matches:
+        for match in matches:
             self.result_list.controls.append(
-                ft.Text(f"📚 {topic}", size=18, weight=ft.FontWeight.BOLD),
+                ft.Text(f"📚 {match}", size=18, weight=ft.FontWeight.BOLD),
             )
 
-            chain = searching.prerequisite_chain(
-                topic,
+            chain = searching.append_match(
+                match,
                 base=self.databasepath,
-                max_depth=3,
+                max_depth=self.appenddepth,
             )
-            chains_db[topic] = chain
+            chains_db[match] = chain
 
             if not chain:
                 self.result_list.controls.append(
@@ -149,9 +158,15 @@ class Mentor(ft.Container):
                 self.update()
             else:
                 try:
-                    content = exporting.to_markdown(
-                        query, matches, chains_db,
-                    )
+                    match self.export_mode:
+                        case "Markdown":
+                            content = exporting.to_markdown(
+                                query, matches, chains_db,
+                            )
+                        case "Mermaid":
+                            content = exporting.to_mermaid(
+                                query, matches, chains_db,
+                            )
                     exporting.write_file(export_path, content)
                 except OSError:
                     self.result_list.controls.append(
@@ -164,6 +179,9 @@ class Mentor(ft.Container):
 
     def _choose_database(self, e) -> None:
         self.databasepath = self.database_field.value.strip()
+
+    def _set_depth(self, e) -> None:
+        self.appenddepth = int(self.depth_field.value.strip())
 
     def changeExportMode(self, e) -> None:
         self.export_mode = self.setExportMode_btn.value

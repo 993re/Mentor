@@ -3,13 +3,14 @@ name = "mentor"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [
     { name = "re993", email = "" },
     { name = "deepseek-v4-pro" },
 ]
 dependencies = [
     "flet>=0.85.1",
+    "grafeo>=0.5.42",
     "pyvespa>=1.0.0",
 ]
     

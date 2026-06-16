@@ -1,12 +1,9 @@
 """Search engine: two-part architecture — search + append.
-
-Part 1 — *search*: engine-swappable topic discovery.
-Part 2 — *append*: engine-agnostic prerequisite graph traversal.
 """
 
 from __future__ import annotations
 
-from database import knowledge_base
+from testdata import knowledge_base
 from pathlib import Path
 import json
 
@@ -30,8 +27,6 @@ def _load_base(base: str | None) -> dict[str, list[str]]:
     return json.loads(Path(base).read_text(encoding="utf-8"))
 
 
-# ── Part 1: search ──────────────────────────────────────
-
 def search(
     query: str,
     base: str | None = None,
@@ -50,36 +45,26 @@ def search(
     loaded = _load_base(base)
     query_lower = query.lower()
     return [name for name in loaded if query_lower in name.lower()]
+ 
 
-
-# ── Part 2: append (engine-agnostic) ────────────────────
-
-def prerequisite_chain(
-    knowledge: str,
+def append_match(
+    match: str,
     base: str | None = None,
     max_depth: int = 3,
 ) -> list[tuple[int, str]]:
-    """Return a flat list of *(depth, topic)* for the prerequisite tree.
-
-    Pure graph traversal — reads edges directly from the base dict.
-    No search engine involved (append is always engine-agnostic).
-
-    Depth 1 = direct prerequisites, depth 2 = prerequisites of those, etc.
-    Handles cycles and missing entries gracefully.
-    """
     loaded = _load_base(base)
     results: list[tuple[int, str]] = []
     visited: set[str] = set()
 
-    def _dfs(name: str, depth: int) -> None:
-        if depth > max_depth or name in visited:
+    def _append(match: str, depth: int) -> None:
+        if depth > max_depth or match in visited:
             return
-        visited.add(name)
-        for prerequisite in loaded.get(name, []):
-            results.append((depth, prerequisite))
-            _dfs(prerequisite, depth + 1)
+        visited.add(match)
+        for prerequisite in loaded.get(match, []):
+            results.append((depth, prerequisite)) #finally: match's results == [(2, a), (3, aa), (1, b)]
+            _append(prerequisite, depth + 1)
 
-    _dfs(knowledge, 1)
+    _append(match, 2)
     return results
 
 
@@ -103,7 +88,7 @@ if __name__ == "__main__":
 
     for topic in matches:
         print(f"\n=== {topic} ===")
-        chain = prerequisite_chain(topic, max_depth=max_depth)
+        chain = append_match(topic, max_depth=max_depth)
         if not chain:
             print("  (无已知前置知识)")
         for depth, prereq in chain:

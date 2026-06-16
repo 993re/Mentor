@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 import json
 
-from database import knowledge_base
+from testdata import knowledge_base
 
 
 def _load_base(base: str | None) -> dict[str, list[str]]:
@@ -177,7 +177,7 @@ class SearchVespa:
         results: list[tuple[int, str]] = []
         visited: set[str] = set()
 
-        def _dfs(name: str, depth: int) -> None:
+        def _append(name: str, depth: int) -> None:
             if depth > max_depth or name in visited:
                 return
             visited.add(name)
@@ -185,7 +185,7 @@ class SearchVespa:
             if doc:
                 for prerequisite in doc.get("prerequisites", []):
                     results.append((depth, prerequisite))
-                    _dfs(prerequisite, depth + 1)
+                    _append(prerequisite, depth + 1)
 
-        _dfs(knowledge, 1)
+        _append(knowledge, 1)
         return results
