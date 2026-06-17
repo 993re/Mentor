@@ -31,7 +31,7 @@ class Mentor(ft.Container):
             value="dict",
             options=[
                 ft.dropdown.Option("dict", "Dict (substring)"),
-                ft.dropdown.Option("vespa", "Vespa (BM25)"),
+                ft.dropdown.Option("grafeo", "Grafeo (BM25)"),
             ],
             on_select=self._on_engine_change,
             tooltip="Search engine backend",
