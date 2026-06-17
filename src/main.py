@@ -163,11 +163,16 @@ class Mentor(ft.Container):
                             content = exporting.to_markdown(
                                 query, matches, chains_db,
                             )
+                            exporting.write_file(export_path, content)
                         case "Mermaid":
                             content = exporting.to_mermaid(
                                 query, matches, chains_db,
                             )
-                    exporting.write_file(export_path, content)
+                            exporting.write_file(export_path, content)
+                        case "Grafeo":
+                            exporting.to_grafeo(
+                                query, matches, chains_db, export_path,
+                            )
                 except OSError:
                     self.result_list.controls.append(
                         ft.Text(
